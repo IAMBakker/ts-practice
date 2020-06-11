@@ -6,11 +6,16 @@ function printResult(num: number): void {
     console.log("Result: " + num);
 }
 
-let combineValues;
+// let combineValues : Function;
+
+// being more specific about the function type, requires 2 params of type number,
+// returns a number.
+let combineValues : (a: number, b: number) => number;
 
 combineValues = add;
-// nice javascript. nice.
-combineValues = 5;
+
+// therefore, printResult cannot be assigned to combineValues.
+// combineValues = printResult;
 
 printResult(add(5, 12));
 
