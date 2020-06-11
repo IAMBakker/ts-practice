@@ -1,27 +1,17 @@
-// const person: {
-//     name: string;
-//     age: number;
-// } = {
-const person: {
-    name: string;
-    age: number;
-    hobbies: string[];
-    role: [number, string];
-} = {
-    name: "Ico",
-    age: 32,
-    hobbies: ["Sports", "Cooking"],
-    role: [2, "Tester"]
-};
-
-person.role.push("Admin");
-// person.role[1] = 10;
-
-let favoriteActivities: string[];
-favoriteActivities = ["Sports"];
-
-console.log(person.name);
-
-for (const hobby of person.hobbies){
-    console.log(hobby);
+function add(n1: number, n2: number){
+    return n1 + n2;
 }
+
+function printResult(num: number): void {
+    console.log("Result: " + num);
+}
+
+let combineValues;
+
+combineValues = add;
+// nice javascript. nice.
+combineValues = 5;
+
+printResult(add(5, 12));
+
+console.log(combineValues(5, 13));
