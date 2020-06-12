@@ -1,3 +1,6 @@
+# JS files, since we're using typescript
+*.js
+
 # Logs
 logs
 *.log
