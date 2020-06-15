@@ -6,7 +6,7 @@ Some useful info here
 
 ## Real time site deployments
 lite server, runs webserver on localhost:3000
-Starts by issuing: `npm run dev`
+Starts by issuing: `npm start`
 
 ## Generating JS files
 * Single file: `tsc filename.ts`
