@@ -1,25 +1,34 @@
-let buttonClicked = false;
-const button = document.getElementById("buttonId")!;
+const form = document.forms.namedItem("personInputForm") as HTMLFormElement;
 
-class Mountain {
-    name!: string;
-    height!: number;
-    place!: string;
+class Person {
+    firstName!: string;
+    lastName!: string;
+    birthDate!: Date;
+    emailAddress!: string;
 };
 
-let mountains: Mountain[] = [
-    { name: "Monte Falco", height: 1658, place: "Parco Foreste Casentinesi" },
-    { name: "Monte Falterona", height: 1654, place: "Parco Foreste Casentinesi" },
-    { name: "Poggio Scali", height: 1520, place: "Parco Foreste Casentinesi" },
-    { name: "Pratomagno", height: 1592, place: "Parco Foreste Casentinesi" },
-    { name: "Monte Amiata", height: 1738, place: "Siena" }
+let persons: Person[] = [
+    { firstName: "Henk", lastName: "Henksma", birthDate: new Date(1963, 4, 13), emailAddress: "email@email.com"}
   ];
 
-button.addEventListener("click", () => {
-    buttonClicked = true;
-    button.setAttribute("disabled", "true");
-    console.log("The button was clicked!")
+form.addEventListener("change", () => {
+    console.log(form["dateOfBirthDay"].value)
+    if(
+        form["firstName"].value !== "" &&
+        form["lastName"].value !== "" &&
+        form["dateOfBirthDay"].value !== "" &&
+        form["dateOfBirthMonth"].value !== "" &&
+        form["dateOfBirthYear"].value !== "" &&
+        form["email"].value !== ""
+    ){
+        enableFormSubmitButton();
+    }
 });
+
+function enableFormSubmitButton(){
+    var submitButton = form.children.namedItem("submit")! as HTMLInputElement;
+    submitButton.removeAttribute("disabled");
+}
 
 function generateTableHead(table: HTMLTableElement, data: string[]) {
     let thead = table.createTHead();
@@ -32,19 +41,26 @@ function generateTableHead(table: HTMLTableElement, data: string[]) {
     }
   }
 
-  function generateTableBody(table: HTMLTableElement, data: Mountain[]){
+  function generateTableBody(table: HTMLTableElement, data: Person[]){
       let tbody = table.createTBody();
-      for(let mountain of data){
+      for(let person of data){
         let row = tbody.insertRow();
-        let nameCell = generateTableCell(mountain.name);
-        let heightCell = generateTableCell(mountain.height.toString());
-        let placeCell = generateTableCell(mountain.place);
-        let trashCell = generateTrashcan();
-        row.appendChild(nameCell);
-        row.appendChild(heightCell);
-        row.appendChild(placeCell);
-        row.appendChild(trashCell);
+        generateTableRow(row, person);
     }
+}
+
+function generateTableRow(row: HTMLTableRowElement, person: Person){
+    let firstNameCell = generateTableCell(person.firstName);
+    let lastNameCell = generateTableCell(person.lastName);
+    var dateString = person.birthDate.getDate() + "-" + person.birthDate.getMonth() + "-" + person.birthDate.getFullYear();
+    let heightCell = generateTableCell(dateString);
+    let placeCell = generateTableCell(person.emailAddress);
+    let trashCell = generateTrashcan();
+    row.appendChild(firstNameCell);
+    row.appendChild(lastNameCell);
+    row.appendChild(heightCell);
+    row.appendChild(placeCell);
+    row.appendChild(trashCell);
 }
 
 function generateTableCell(cellText: string){
@@ -71,17 +87,55 @@ function deleteRow(deleteButton: HTMLButtonElement){
     removeItemFromArray(rowText);
 }
 
-/// removing the mountain based on name and height. not the best solution.
+/// removing person based on information.
 function removeItemFromArray(rowText: string){
-    var mountainIndex = mountains.findIndex((mountain) => {
-        return rowText.includes(mountain.name) &&
-        rowText.includes(mountain.height.toString());
+    var index = persons.findIndex((person) => {
+        return rowText.includes(person.firstName) &&
+        rowText.includes(person.lastName) &&
+        rowText.includes(person.emailAddress) &&
+        rowText.includes(person.birthDate.toString());
     })
-    if (mountainIndex !== -1){
-        mountains.splice(mountainIndex, 1);
+    if (index !== -1){
+        persons.splice(index, 1);
     }
 }
 
-let table = document.getElementById("MountainTable") as HTMLTableElement;
-generateTableHead(table, Object.keys(mountains[0]));
-generateTableBody(table, mountains);
+let table = document.getElementById("PersonTable") as HTMLTableElement;
+if(persons.length > 0){
+    generateTableHead(table, Object.keys(persons[0]));
+    generateTableBody(table, persons);
+}
+
+function validateForm(){
+    if(validateEmail(form["email"].value)){
+        // sending data to webserver
+    
+        // populating table with another row.
+        addPersonToTable();
+    } else {
+        alert("You have entered an invalid email address!")
+        return (false)
+    }
+}
+
+function addPersonToTable(){
+    let person = { 
+        firstName: form["firstName"].value, 
+        lastName: form["lastName"].value, 
+        birthDate: new Date(
+            form["dateOfBirthYear"].value, 
+            form["dateOfBirthMonth"].value, 
+            form["dateOfBirthDay"].value), 
+        emailAddress: form["email"]
+    };
+    persons.push(person);
+    let tbody = table.tBodies.item(0)!;
+    let row = tbody.insertRow();
+    generateTableRow(row, person);
+}
+
+function validateEmail(email: string)
+{
+    return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    .test(email);
+}
